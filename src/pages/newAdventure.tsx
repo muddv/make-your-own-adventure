@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { useState } from 'react'
+import { useState, Reducer, useReducer } from 'react'
 
 function NewEvent() {
     return (
@@ -17,21 +17,71 @@ function NewEvent() {
         </>
     )
 }
-
+let i = 1
 const NewAdventure: NextPage = () => {
-    const [n, setN] = useState(2)
-    const [container, setContainer] = useState([<NewEvent key={1}></NewEvent>])
-    function handleClick() {
-        if (n < 10) {
-            setN(n + 1)
-        }
-        setContainer(container => [...container, <NewEvent key={n}></NewEvent>])
+
+    type State = {
+        value: JSX.Element[];
+        index: number
     }
 
-    function handleRemoveEventClick() {
-        let temp = container
-        temp.pop()
-        setContainer([...temp])
+    const initialFormState: State = {
+        value: [<NewEvent key={0}></NewEvent>],
+        index: 0
+    }
+
+    enum ActionKind {
+        Add = 'ADD',
+        Remove = 'REMOVE',
+    }
+
+    type Action = {
+        type: ActionKind,
+    }
+
+    const increaseAction: Action = {
+        type: ActionKind.Add,
+    }
+
+    const decreaseAction: Action = {
+        type: ActionKind.Remove
+    }
+
+    function formReducer(state: State, action: Action) {
+        const { type } = action
+        switch (type) {
+            case ActionKind.Add:
+                console.log(i)
+                console.log("add y")
+                i++
+                return {
+                    index: state.index++,
+                    value: [...state.value, <NewEvent key={i}></NewEvent>]
+                }
+
+            case ActionKind.Remove:
+                state.value.pop()
+                console.log(i)
+                console.log("remove y")
+                i--
+                return {
+                    index: state.index--,
+                    value: [...state.value]
+                }
+        }
+    }
+
+    const [state, dispatch] = useReducer(formReducer, initialFormState)
+
+    function handleAdd() {
+        if (i < 5) {
+            dispatch(increaseAction)
+        }
+    }
+    function handleRemove() {
+        if (i > 1) {
+            dispatch(decreaseAction)
+        }
     }
 
     return (
@@ -47,10 +97,10 @@ const NewAdventure: NextPage = () => {
                     <label>name of adventure</label>
                     <input placeholder="A title of your adventure" className="border-2 border-black"></input>
                     <h2>Events: what happens in your game</h2>
-                    {container}
+                    {state.value}
                 </form>
-                <button onClick={handleRemoveEventClick} className="mt-10 border-2 border-black hover:bg-slate-400">remove event</button>
-                <button onClick={handleClick} className="mt-10 border-2 border-black hover:bg-slate-400">add new event</button>
+                <button onClick={handleAdd} className="mt-10 border-2 border-black hover:bg-slate-400">add new event</button>
+                <button onClick={handleRemove} className="mt-10 border-2 border-black hover:bg-slate-400">remove event</button>
             </div>
         </>
     )
