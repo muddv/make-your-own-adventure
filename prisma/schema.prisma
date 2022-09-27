@@ -6,6 +6,29 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id        String      @id @default(cuid())
+  createdAt DateTime    @default(now())
+
+}
+
+model Adventure {
+  id        Int      @id @default(autoincrement())
+
+  userId    String
+  createdAt DateTime @default(now())
+
+}
+
+model Event {
+  id            Int       @id @default(autoincrement())
+
+  adventureId   Int
+  description String
+  effect Int
 }
