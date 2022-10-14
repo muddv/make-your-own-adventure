@@ -8,27 +8,27 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-model User {
-  id        String      @id @default(cuid())
-  createdAt DateTime    @default(now())
-
-}
+// no need for users for now
+//model User {
+  //id        String      @id @default(cuid())
+  //createdAt DateTime    @default(now())
+//}
 
 model Adventure {
   id        Int      @id @default(autoincrement())
-
   userId    String
   createdAt DateTime @default(now())
-
+  likes Int @default(0)
+  parNames  String
+  parValues Int
 }
 
 model Event {
   id            Int       @id @default(autoincrement())
-
   adventureId   Int
   description String
   effect Int
+  rolls Int
 }
